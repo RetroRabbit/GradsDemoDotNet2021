@@ -16,6 +16,8 @@ namespace GradDemo.Api
 {
     public class Startup
     {
+        public static bool IntergrationTesting = false;
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
