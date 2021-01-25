@@ -67,6 +67,18 @@ namespace GradDemo.Tests
         }
 
         [Test]
+        public async Task CryptoGetTest()
+        {
+            var response = await CallHelper.GetAndDeserialize<Response<string>>(_httpClient, "/crypto/get-crypto/bitcoin&zar");
+
+            Assert.IsTrue(response.httpResponse.IsSuccessStatusCode);
+
+            var response_content = response.content;
+
+            Assert.NotNull(response_content);
+        }
+
+        [Test]
         public async Task TestAPost()
         {
             var inputName = "Tommy";
