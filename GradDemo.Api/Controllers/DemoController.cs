@@ -38,18 +38,24 @@ namespace GradDemo.Api.Controllers
         }
 
         [HttpPost("say-hello")]
-        public string SayHello([FromBody] string name)
+        public Response<string> SayHello([FromBody] string name)
         {
             var reallyOld = "Hello " + name;
             var lessOld = string.Format("Hello {0}", name);
 
-            return $"Hello {name}";
+            return Response<string>.Successful($"Hello, {name}!");
+        }
+
+        [HttpGet("should-fail")]
+        public Response<string> ShouldFail()
+        {
+            return Response<string>.Error("Fails for test purposes");
         }
 
         [HttpPost("say-hello-to-more-people/{number}")]
-        public string SayHelloToLotsOfPeople(int number, [FromBody] HelloRequest name)
+        public Response<string> SayHelloToLotsOfPeople(int number, [FromBody] HelloRequest name)
         {
-            return $"[{number}] Hello {name.Name} and {name.OtherName} and especially you {name.LastName}";
+            return Response<string>.Successful($"[{number}] Hello {name.Name} and {name.OtherName} and especially you {name.LastName}");
         }
     }
 }
