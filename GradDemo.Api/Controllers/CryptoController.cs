@@ -4,7 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.IO;
-using System.Net;
+using System.Net.Http;
+using System.Threading.Tasks;
 using System.Text;
 using GradDemo.Api.Models;
 
@@ -34,35 +35,13 @@ namespace GradDemo.Api.Controllers
 
         // GET api/<CryptoController>/5
         [HttpGet("crypto-price")]
-        public string GetCrypto()
+        public async Task<string> GetCrypto()
         {
-            string responseFromServer = "";
+            using var client = new HttpClient();
 
-            
-            WebRequest request = WebRequest.Create("https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=ZAR");
-            
-            request.Credentials = CredentialCache.DefaultCredentials;
+            var content = await client.GetStringAsync("https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=ZAR");
 
-            WebResponse response = request.GetResponse();
-            
-            Console.WriteLine(((HttpWebResponse)response).StatusDescription);
-
-            // Get the stream containing content returned by the server.
-            // The using block ensures the stream is automatically closed.
-            using (Stream dataStream = response.GetResponseStream())
-            {
-                // Open the stream using a StreamReader for easy access.
-                StreamReader reader = new StreamReader(dataStream);
-                // Read the content.
-                responseFromServer  = reader.ReadToEnd();
-                // Display the content.
-                Console.WriteLine(responseFromServer);
-            }
-
-            // Close the response.
-            response.Close();
-
-            return responseFromServer;
+            return content;
         }
 
         // POST api/<CryptoController>
