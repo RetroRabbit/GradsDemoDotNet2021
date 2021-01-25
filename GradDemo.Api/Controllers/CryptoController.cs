@@ -15,6 +15,13 @@ namespace GradDemo.Api.Controllers
     [ApiController]
     public class CryptoController : ControllerBase
     {
+         static readonly string lol;
+
+        static CryptoController() 
+        {
+            lol = "";
+        }
+
         HttpClient _client;
         HttpClient client
         {
@@ -28,6 +35,8 @@ namespace GradDemo.Api.Controllers
                 return _client;
             }
         }
+
+        public static string Lol => lol;
 
         // GET: api/<CryptoController>
         [HttpGet]
