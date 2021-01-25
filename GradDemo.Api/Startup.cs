@@ -1,11 +1,14 @@
+using GradDemo.Api.Entities;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using System;
 using System.Collections.Generic;
@@ -28,8 +31,16 @@ namespace GradDemo.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
             services.AddControllers();
+
+            services.AddIdentity<IdentityUser, IdentityRole>()
+                .AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddRoles<IdentityRole>()
+                .AddDefaultTokenProviders();
+
+            services.AddDbContext<ApplicationDbContext>
+                (opt => opt.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "graddemo", Version = "v1" });
@@ -37,7 +48,7 @@ namespace GradDemo.Api
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ApplicationDbContext db)
         {
             if (env.IsDevelopment())
             {
@@ -56,6 +67,8 @@ namespace GradDemo.Api
             {
                 endpoints.MapControllers();
             });
+
+            db.Database.Migrate();
         }
     }
 }
