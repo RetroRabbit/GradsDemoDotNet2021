@@ -71,7 +71,8 @@ namespace GradDemo.Api
                 endpoints.MapControllers();
             });
 
-            if (!IntergrationTesting) db.Database.Migrate();
+            if (!IntergrationTesting) 
+            db.Database.Migrate();
         }
     }
 }
