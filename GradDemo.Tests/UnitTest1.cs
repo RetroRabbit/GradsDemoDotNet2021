@@ -1,4 +1,5 @@
 using GradDemo.Api;
+using GradDemo.Api.Entities;
 using GradDemo.Api.Models;
 using NUnit.Framework;
 using System.Collections.Generic;
@@ -22,8 +23,6 @@ namespace GradDemo.Tests
         [Test]
         public async Task AsyncTest()
         {
-             
-            
             var tester = GetName();
             var testerasync = GetNameAsync();
             var testerasync2 = GetNameAsync();
@@ -80,6 +79,30 @@ namespace GradDemo.Tests
 
             Assert.NotNull(resultContent);
             Assert.IsTrue($"Hello, {inputName}!" == resultContent);
+        }
+
+        [Test]
+        public async Task TestAddContact()
+        {
+            var contacts2 = await CallHelper.GetAndDeserialize<Response<ICollection<Contact>>>(_httpClient, "Demo/contacts");
+
+            Assert.IsTrue(contacts2.content.Payload.Count == 0);
+
+            var test = await CallHelper.PostAndDeserialize<Response<string>>(_httpClient,
+                "/Demo/add-contact", new ContactRequest()
+                {
+                    ContactNumber = "0821231234",
+                    Name = "Tommy",
+                    LastName = "Suranem"
+                }
+                );
+
+            Assert.IsTrue(test.httpResponse.IsSuccessStatusCode);
+
+            var contacts = await CallHelper.GetAndDeserialize<Response<ICollection<Contact>>>(_httpClient, "Demo/contacts");
+
+            Assert.IsTrue(contacts.content.Payload.Count > 0);
+
         }
 
 

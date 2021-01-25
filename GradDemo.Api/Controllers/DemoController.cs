@@ -1,5 +1,7 @@
-﻿using GradDemo.Api.Models;
+﻿using GradDemo.Api.Entities;
+using GradDemo.Api.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -18,10 +20,12 @@ namespace GradDemo.Api.Controllers
         };
 
         private readonly ILogger<DemoController> _logger;
+        private readonly ApplicationDbContext _context;
 
-        public DemoController(ILogger<DemoController> logger)
+        public DemoController(ILogger<DemoController> logger, ApplicationDbContext context)
         {
             _logger = logger;
+            _context = context;
         }
 
         [HttpGet]
@@ -42,7 +46,6 @@ namespace GradDemo.Api.Controllers
         {
             var reallyOld = "Hello " + name;
             var lessOld = string.Format("Hello {0}", name);
-
             return Response<string>.Successful($"Hello, {name}!");
         }
 
@@ -56,6 +59,28 @@ namespace GradDemo.Api.Controllers
         public Response<string> SayHelloToLotsOfPeople(int number, [FromBody] HelloRequest name)
         {
             return Response<string>.Successful($"[{number}] Hello {name.Name} and {name.OtherName} and especially you {name.LastName}");
+        }
+
+        [HttpPost("add-contact")]
+        public async Task<Response<string>> AddContactAsync(ContactRequest contact)
+        {
+            _context.Contacts.Add(new Contact()
+            {
+                ContactNumber = contact.ContactNumber,
+                LastName = contact.LastName,
+                Name = contact.Name
+            });
+
+            await _context.SaveChangesAsync();
+
+            return Response<string>.Successful("");
+        }
+
+        [HttpGet("contacts")]
+        public async Task<Response<ICollection<Contact>>> GetContacts()
+        {
+            var contacts = await _context.Contacts.ToListAsync();
+            return Response<ICollection<Contact>>.Successful(contacts);
         }
     }
 }
