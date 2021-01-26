@@ -135,5 +135,21 @@ namespace GradDemo.Tests
 
             Assert.IsTrue(usdResult.content.Payload.Value < zarresult.content.Payload.Value);
         }
+
+        [Test]
+        public async Task TestSetCurrencyPref()
+        {
+            
+            string currencyPref = "usd";
+            var usdResult = await CallHelper.GetAndDeserialize<Response<string>>(_httpClient, $"/api/v3/simple/price?ids=bitcoin&vs_currencies={currencyPref}");
+
+            Assert.IsTrue(usdResult.httpResponse.IsSuccessStatusCode);
+
+            
+
+            Assert.IsTrue(usdResult.httpResponse.IsSuccessStatusCode);
+
+            Assert.IsTrue(usdResult.content.Payload == currencyPref);
+        }
     }
 }

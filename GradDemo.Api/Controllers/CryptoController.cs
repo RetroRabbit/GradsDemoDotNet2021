@@ -20,14 +20,19 @@ namespace GradDemo.Api.Controllers
     [ApiController]
     public class CryptoController : ControllerBase
     {
+        private readonly CoinGeckoProvider _coinGeckoProvider;
+
+        public CryptoController(CoinGeckoProvider coinProv)
+        {
+            _coinGeckoProvider = coinProv;
+        }
 
         [HttpGet("value/for/{coinId}/currency/{currency}")]
         public async Task<Response<CryptoCoinResponse>> GetCoin(string coinId, string currency)
         {
             var result = new CryptoCoinResponse();
 
-            CoinGeckoProvider provider = new CoinGeckoProvider();
-            var res = await provider.GetValueForCoin(coinId, currency);
+            var res = await _coinGeckoProvider.GetValueForCoin(coinId, currency);
 
             if (res.HasValue)
             {
@@ -39,5 +44,28 @@ namespace GradDemo.Api.Controllers
 
             return Response<CryptoCoinResponse>.Error("Something went wrong");
         }
+
+        [HttpGet("GetAllCurrencies")]
+        public async Task<Response<string[]>> GetAllCurrencies()
+        {
+            string[]? res;
+
+             res = await _coinGeckoProvider.GetAllCurrency();
+
+            if (res != null)
+            {
+                return Response<string[]>.Successful(res);
+                
+            }
+
+            return Response<string[]>.Error("Something went wrong");
+        }
+
+        [HttpPost("{CurrencySymbol}")]
+        public void SetCurrencyPreference(string CurrencySymbol)
+        {
+            // what should I do???
+        }
+
     }
 }
