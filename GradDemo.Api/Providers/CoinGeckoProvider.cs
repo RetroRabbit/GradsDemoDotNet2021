@@ -12,11 +12,16 @@ namespace GradDemo.Api.Providers
     {
         static HttpClient client = new HttpClient();
 
+        public CoinGeckoProvider(string baseUrl)
+        {
+            client.BaseAddress = new Uri(baseUrl);
+        }
+
         public async Task<double?> GetValueForCoin(string coinId, string currency)
         {
             double? resultValue = null;
 
-            string url = $"https://api.coingecko.com/api/v3/simple/price?ids={coinId}&vs_currencies={currency}";
+            string url = $"api/v3/simple/price?ids={coinId}&vs_currencies={currency}";
             HttpResponseMessage response = await client.GetAsync(url);
             if (response.IsSuccessStatusCode)
             {

@@ -20,14 +20,19 @@ namespace GradDemo.Api.Controllers
     [ApiController]
     public class CryptoController : ControllerBase
     {
+        private readonly CoinGeckoProvider _coinGeckoProvider;
+
+        public CryptoController(CoinGeckoProvider coinProv)
+        {
+            _coinGeckoProvider = coinProv;
+        }
 
         [HttpGet("value/for/{coinId}/currency/{currency}")]
         public async Task<Response<CryptoCoinResponse>> GetCoin(string coinId, string currency)
         {
             var result = new CryptoCoinResponse();
 
-            CoinGeckoProvider provider = new CoinGeckoProvider();
-            var res = await provider.GetValueForCoin(coinId, currency);
+            var res = await _coinGeckoProvider.GetValueForCoin(coinId, currency);
 
             if (res.HasValue)
             {
