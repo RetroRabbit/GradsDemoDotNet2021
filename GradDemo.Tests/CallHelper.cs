@@ -20,7 +20,7 @@ namespace GradDemo.Tests
             var content = new StringContent(JsonConvert.SerializeObject(input), Encoding.UTF8, "application/json");
             var result = await client.PostAsync(path, content);
             var resultContent = await ParseContent<T>(result.Content);
-            return (resultContent, result);
+            throw new Exception("test fail");
         }
 
         private static async Task<T?> ParseContent<T>(HttpContent content) where T : class

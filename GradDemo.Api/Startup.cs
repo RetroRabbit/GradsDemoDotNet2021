@@ -82,7 +82,7 @@ namespace GradDemo.Api
             {
                 db.Database.Migrate();
             }
-            
+
         }
     }
 }

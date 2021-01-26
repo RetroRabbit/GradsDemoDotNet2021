@@ -44,5 +44,28 @@ namespace GradDemo.Api.Controllers
 
             return Response<CryptoCoinResponse>.Error("Something went wrong");
         }
+
+        [HttpGet("GetAllCurrencies")]
+        public async Task<Response<string[]>> GetAllCurrencies()
+        {
+            string[]? res;
+
+             res = await _coinGeckoProvider.GetAllCurrency();
+
+            if (res != null)
+            {
+                return Response<string[]>.Successful(res);
+                
+            }
+
+            return Response<string[]>.Error("Something went wrong");
+        }
+
+        [HttpPost("{CurrencySymbol}")]
+        public void SetCurrencyPreference(string CurrencySymbol)
+        {
+            // what should I do???
+        }
+
     }
 }
