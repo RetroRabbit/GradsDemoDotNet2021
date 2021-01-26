@@ -14,6 +14,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using GradDemo.Api.Providers;
 
 namespace GradDemo.Api
 {
@@ -48,6 +49,12 @@ namespace GradDemo.Api
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "graddemo", Version = "v1" });
             });
+
+            services.AddSingleton(x => new CoinGeckoProvider(
+                    Configuration.GetValue<string>("CoinGecko:Url")
+                )
+            );
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
