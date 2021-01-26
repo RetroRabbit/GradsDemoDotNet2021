@@ -1,5 +1,6 @@
 ﻿using GradDemo.Api.Entities;
 using GradDemo.Api.Helpers;
+using GradDemo.Api.Models;
 using GradDemo.Api.Models.Auth;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -22,6 +23,7 @@ namespace GradDemo.Api.Controllers
         {
             _userManager = userManager;
             _authHelper = authhelper;
+            
         }
 
         /// <summary>
@@ -88,6 +90,14 @@ namespace GradDemo.Api.Controllers
                     .Replace('+', 'c');
                 return converted;
             }
+        }
+
+        [HttpGet("preferences")]
+        public async Task<Response<Device>> GetPreference()
+        {
+            var preference = new Device();
+
+            var pref = await _userManager.GetPreferences();
         }
     }
 }
