@@ -1,6 +1,7 @@
 ﻿using GradDemo.Api.Entities;
 using GradDemo.Api.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -23,16 +24,21 @@ namespace GradDemo.Api.Controllers
 
         private readonly ILogger<DemoAuthController> _logger;
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<IdentityUser> _userManager;
 
-        public DemoAuthController(ILogger<DemoAuthController> logger, ApplicationDbContext context)
+        public DemoAuthController(ILogger<DemoAuthController> logger, ApplicationDbContext context, UserManager<IdentityUser> userManager)
         {
             _logger = logger;
             _context = context;
+            _userManager = userManager;
         }
 
         [HttpGet]
-        public IEnumerable<WeatherForecast> Get()
+        public async Task<IEnumerable<WeatherForecast>> GetAsync()
         {
+            //test
+            var user = await _userManager.GetUserAsync(User);
+                
             var rng = new Random();
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast
             {
