@@ -80,7 +80,7 @@ namespace GradDemo.Api
 
             if (!IntergrationTesting)
             {
-                //db.Database.Migrate();
+                db.Database.Migrate();
             }
 
         }
