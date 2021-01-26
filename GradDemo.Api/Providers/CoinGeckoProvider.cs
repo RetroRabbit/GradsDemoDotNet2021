@@ -1,4 +1,5 @@
-﻿using GradDemo.Api.Models.CoinGecko;
+﻿using GradDemo.Api.Models;
+using GradDemo.Api.Models.CoinGecko;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -39,6 +40,24 @@ namespace GradDemo.Api.Providers
                 }
 
                 return resultValue;
+            }
+
+            return null;
+        }
+
+        public async Task<string?[]> GetAllCurrencies()
+        {
+
+            string url = "api/v3/simple/supported_vs_currencies";
+            HttpResponseMessage response = await client.GetAsync(url);
+            if (response.IsSuccessStatusCode)
+            {
+                string res = await response.Content.ReadAsStringAsync();
+
+                var coinGeckoResult = JsonConvert.DeserializeObject<string?[]>(res);
+
+
+                return coinGeckoResult;
             }
 
             return null;
