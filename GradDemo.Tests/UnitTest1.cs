@@ -1,6 +1,7 @@
 using GradDemo.Api;
 using GradDemo.Api.Entities;
 using GradDemo.Api.Models;
+using GradDemo.Api.Models.CoinGecko;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -122,10 +123,17 @@ namespace GradDemo.Tests
         public async Task TestGetCurrency()
         {
             string coinId = "bitcoin";
-            string currency = "zar"; 
-            var result = await CallHelper.GetAndDeserialize<Response<string>>(_httpClient, $"crypto/value/for/{coinId}/currency/{currency}");
+            string currency = "usd"; 
+            var usdResult = await CallHelper.GetAndDeserialize<Response<CryptoCoinResponse>>(_httpClient, $"crypto/value/for/{coinId}/currency/{currency}");
 
-            Assert.IsTrue(result.httpResponse.IsSuccessStatusCode);
+            Assert.IsTrue(usdResult.httpResponse.IsSuccessStatusCode);
+
+            currency = "zar";
+            var zarresult = await CallHelper.GetAndDeserialize<Response<CryptoCoinResponse>>(_httpClient, $"crypto/value/for/{coinId}/currency/{currency}");
+
+            Assert.IsTrue(usdResult.httpResponse.IsSuccessStatusCode);
+
+            Assert.IsTrue(usdResult.content.Payload.Value < zarresult.content.Payload.Value);
         }
     }
 }
