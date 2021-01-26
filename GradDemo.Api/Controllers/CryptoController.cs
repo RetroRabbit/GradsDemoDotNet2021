@@ -3,30 +3,46 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Threading.Tasks;
+using GradDemo.Api.Models;
+using Newtonsoft.Json;
+using GradDemo.Api.Models.CoinGecko;
+using GradDemo.Api.Providers;
+
+// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace GradDemo.Api.Controllers
 {
-    [ApiController]
     [Route("[controller]")]
-    public class CryptoController: ControllerBase
+    [ApiController]
+    public class CryptoController : ControllerBase
     {
+        private readonly CoinGeckoProvider _coinGeckoProvider;
 
-        private static HttpClient client;
-
-        static CryptoController()
+        public CryptoController(CoinGeckoProvider coinProv)
         {
-            client = new HttpClient() { };
+            _coinGeckoProvider = coinProv;
         }
 
-        [HttpGet("get-crypto/{id}&{currency}")]
-        public async Task<string> GetPrice(string id, string currency)
+        [HttpGet("value/for/{coinId}/currency/{currency}")]
+        public async Task<Response<CryptoCoinResponse>> GetCoin(string coinId, string currency)
         {
-            string url = $"https://api.coingecko.com/api/v3/simple/price?ids={id}&vs_currencies={currency}"; //url of where to get data from
+            var result = new CryptoCoinResponse();
 
-            HttpResponseMessage responseMessage = await client.GetAsync(url);
+            var res = await _coinGeckoProvider.GetValueForCoin(coinId, currency);
 
-            return await responseMessage.Content.ReadAsStringAsync();
+            if (res.HasValue)
+            {
+                return Response<CryptoCoinResponse>.Successful(new CryptoCoinResponse()
+                {
+                    Value = res.Value
+                });
+            }
+
+            return Response<CryptoCoinResponse>.Error("Something went wrong");
         }
     }
 }
