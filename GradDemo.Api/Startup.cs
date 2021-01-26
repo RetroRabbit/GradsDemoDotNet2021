@@ -15,6 +15,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using GradDemo.Api.Providers;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using GradDemo.Api.Helpers;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace GradDemo.Api
 {
@@ -50,6 +54,55 @@ namespace GradDemo.Api
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "graddemo", Version = "v1" });
             });
 
+            services.Configure<IdentityOptions>(options =>
+            {
+                // Default Password settings.
+                options.Password.RequireDigit = false;
+                options.Password.RequireLowercase = false;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequireUppercase = false;
+                options.Password.RequiredLength = 6;
+                options.Password.RequiredUniqueChars = 1;
+            });
+
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("yWDIbXfnckoLSuCqquTSTBrNKdA7qvCM", builder =>
+                {
+                    builder
+                        .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme)
+                        .RequireAuthenticatedUser();
+                });
+                //options.AddPolicy("RequireDeviceRole", policy => policy.RequireRole("Device"));
+            });
+
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+            {
+                options.RequireHttpsMetadata = false;
+                options.SaveToken = true;
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = "GradDemo.Api",
+                    ValidAudience = "GradDemo.Api",
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("yWDIbXfnckoLSuCqquTSTBrNKdA7qvCM"))
+                };
+            });
+
+            services.AddTransient(x => new AuthTokenHelper(
+               x.GetRequiredService<UserManager<IdentityUser>>()
+               ));
+
+
             services.AddSingleton(x => new CoinGeckoProvider(
                     Configuration.GetValue<string>("CoinGecko:Url")
                 )
@@ -71,6 +124,7 @@ namespace GradDemo.Api
 
             app.UseRouting();
 
+            app.UseAuthentication(); // order is important
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

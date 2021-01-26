@@ -1,10 +1,12 @@
 using GradDemo.Api;
 using GradDemo.Api.Entities;
 using GradDemo.Api.Models;
+using GradDemo.Api.Models.Auth;
 using GradDemo.Api.Models.CoinGecko;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
 namespace GradDemo.Tests
@@ -65,6 +67,22 @@ namespace GradDemo.Tests
                         
             Assert.NotNull(niceer);
             Assert.IsTrue(niceer.Count > 0);
+        }
+
+        [Test]
+        public async Task BasicAUthorizedOnlyApiTest()
+        {
+            var shouldFail = await CallHelper.GetAndDeserialize<IList<WeatherForecast>>(_httpClient, "/DemoAuth");
+
+            Assert.IsTrue(shouldFail.httpResponse.StatusCode == System.Net.HttpStatusCode.Unauthorized);
+
+            var login = await SuccessLogin();
+
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", login.Token);
+
+            var shouldPass = await CallHelper.GetAndDeserialize<IList<WeatherForecast>>(_httpClient, "/DemoAuth");
+
+            Assert.IsTrue(shouldPass.httpResponse.IsSuccessStatusCode);
         }
 
         [Test]
@@ -134,6 +152,21 @@ namespace GradDemo.Tests
             Assert.IsTrue(usdResult.httpResponse.IsSuccessStatusCode);
 
             Assert.IsTrue(usdResult.content.Payload.Value < zarresult.content.Payload.Value);
+        }
+
+        public async System.Threading.Tasks.Task<TokenResult> SuccessLogin()
+        {
+            var creds = await CallHelper.PostAndDeserialize<DeviceCredentials>(_httpClient, "/auth/register", null);
+
+            Assert.IsTrue(creds.httpResponse.IsSuccessStatusCode);
+            Assert.IsNotNull(creds.content);
+
+            var token = await CallHelper.PostAndDeserialize<TokenResult>(_httpClient, "/auth/token", creds.content);
+
+            Assert.IsTrue(token.httpResponse.IsSuccessStatusCode);
+            Assert.IsNotNull(token.content?.Token);
+
+            return token.content;
         }
     }
 }
