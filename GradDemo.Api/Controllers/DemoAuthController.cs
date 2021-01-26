@@ -24,9 +24,9 @@ namespace GradDemo.Api.Controllers
 
         private readonly ILogger<DemoAuthController> _logger;
         private readonly ApplicationDbContext _context;
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly UserManager<Device> _userManager;
 
-        public DemoAuthController(ILogger<DemoAuthController> logger, ApplicationDbContext context, UserManager<IdentityUser> userManager)
+        public DemoAuthController(ILogger<DemoAuthController> logger, ApplicationDbContext context, UserManager<Device> userManager)
         {
             _logger = logger;
             _context = context;

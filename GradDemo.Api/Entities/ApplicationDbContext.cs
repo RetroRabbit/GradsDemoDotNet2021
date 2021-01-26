@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace GradDemo.Api.Entities
 {
-    public class ApplicationDbContext : IdentityDbContext<IdentityUser>
+    public class ApplicationDbContext : IdentityDbContext<Device>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {

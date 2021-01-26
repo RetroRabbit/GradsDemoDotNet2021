@@ -1,4 +1,5 @@
-﻿using GradDemo.Api.Helpers;
+﻿using GradDemo.Api.Entities;
+using GradDemo.Api.Helpers;
 using GradDemo.Api.Models.Auth;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -14,10 +15,10 @@ namespace GradDemo.Api.Controllers
     [ApiController]
     public class AuthController : Controller
     {
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly UserManager<Device> _userManager;
         private readonly AuthTokenHelper _authHelper;
 
-        public AuthController(UserManager<IdentityUser> userManager, AuthTokenHelper authhelper)
+        public AuthController(UserManager<Device> userManager, AuthTokenHelper authhelper)
         {
             _userManager = userManager;
             _authHelper = authhelper;
@@ -55,7 +56,7 @@ namespace GradDemo.Api.Controllers
             string password = GenerateRandomClientSecret();
             string username = GenerateRandomClientId();
 
-            var currentUser = await _userManager.CreateAsync(new IdentityUser()
+            var currentUser = await _userManager.CreateAsync(new Device()
             {
                 UserName = username,
                 Email = $"{username}@grademoapi.co.za",

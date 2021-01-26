@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using GradDemo.Api.Entities;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System;
@@ -13,14 +14,14 @@ namespace GradDemo.Api.Helpers
 {
     public class AuthTokenHelper
     {
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly UserManager<Device> _userManager;
 
-        public AuthTokenHelper(UserManager<IdentityUser> userManager)
+        public AuthTokenHelper(UserManager<Device> userManager)
         {
             _userManager = userManager;
         }
 
-        internal async Task<string> GenerateJWTAsync(IdentityUser user)
+        internal async Task<string> GenerateJWTAsync(Device user)
         {
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("yWDIbXfnckoLSuCqquTSTBrNKdA7qvCM"));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);

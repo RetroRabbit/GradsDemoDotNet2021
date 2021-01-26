@@ -38,7 +38,7 @@ namespace GradDemo.Api
         {
             services.AddControllers();
 
-            services.AddIdentity<IdentityUser, IdentityRole>()
+            services.AddIdentity<Device, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddRoles<IdentityRole>()
                 .AddDefaultTokenProviders();
@@ -99,7 +99,7 @@ namespace GradDemo.Api
             });
 
             services.AddTransient(x => new AuthTokenHelper(
-               x.GetRequiredService<UserManager<IdentityUser>>()
+               x.GetRequiredService<UserManager<Device>>()
                ));
 
 
