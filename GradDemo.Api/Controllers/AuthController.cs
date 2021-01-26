@@ -92,12 +92,12 @@ namespace GradDemo.Api.Controllers
             }
         }
 
-        [HttpGet("preferences")]
-        public async Task<Response<Device>> GetPreference()
+        /*[HttpGet("preferences")]
+        /*public async Task<Response<Device>> GetPreference()
         {
             var preference = new Device();
 
-            var pref = await _userManager.GetPreferences();
-        }
+            //var pref = await _userManager.GetPreferences();
+        }*/
     }
 }
