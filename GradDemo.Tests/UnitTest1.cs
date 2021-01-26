@@ -117,5 +117,15 @@ namespace GradDemo.Tests
         {
             return "Tommy";
         }
+        
+        [Test]
+        public async Task TestGetCurrency()
+        {
+            string coinId = "bitcoin";
+            string currency = "zar"; 
+            var result = await CallHelper.GetAndDeserialize<Response<string>>(_httpClient, $"crypto/value/for/{coinId}/currency/{currency}");
+
+            Assert.IsTrue(result.httpResponse.IsSuccessStatusCode);
+        }
     }
 }
