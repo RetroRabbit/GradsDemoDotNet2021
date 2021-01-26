@@ -51,10 +51,9 @@ namespace GradDemo.Api
             });
 
             services.AddSingleton(x => new CoinGeckoProvider(
-                    Configuration.GetValue<string>("CoinGecko:Url")
+                    Configuration.GetValue<string>("CoinGecko:Url"), Configuration.GetValue<string>("Currencies:Url")
                 )
             );
-
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

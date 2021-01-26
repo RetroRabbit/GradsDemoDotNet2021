@@ -11,34 +11,53 @@ namespace GradDemo.Api.Providers
     public class CoinGeckoProvider
     {
         static HttpClient client = new HttpClient();
+        string currUrl;
+        List<string> currencies = new List<string>();
 
-        public CoinGeckoProvider(string baseUrl)
+        public CoinGeckoProvider(string baseUrl,string currenciesurl)
         {
             client.BaseAddress = new Uri(baseUrl);
+            currUrl = currenciesurl;
         }
-
-        public async Task<double?> GetValueForCoin(string coinId, string currency)
+        public async Task<List<string>> GetCurrencies()
+        {
+            HttpResponseMessage response = await client.GetAsync(currUrl);
+            List<string> curr = new List<string>();
+            if (response.IsSuccessStatusCode)
+            {
+                string res = await response.Content.ReadAsStringAsync();
+                string[] splitter = res.Split("\"");
+                foreach (var item in splitter)
+                {
+                    if (item!= "," && item!= "]" && item!="[")
+                    {
+                        curr.Add(item.Trim());
+                    }
+                }
+            }
+            return curr;
+        }
+        public async Task<double?> GetValueForCoin(string currency)
         {
             double? resultValue = null;
+            currencies =  await GetCurrencies();
 
-            string url = $"api/v3/simple/price?ids={coinId}&vs_currencies={currency}";
+            string url = $"api/v3/simple/price?ids=bitcoin&vs_currencies={currency}";
             HttpResponseMessage response = await client.GetAsync(url);
             if (response.IsSuccessStatusCode)
             {
                 string res = await response.Content.ReadAsStringAsync();
-
-                var coinGeckoResult = JsonConvert.DeserializeObject<CoinPrice>(res);
-
-                if (currency.Equals("zar", StringComparison.InvariantCultureIgnoreCase))
+                var coinGeckoResult = JsonConvert.DeserializeObject(res);
+                string val;
+                var someResult = res;
+                string[] splitter = someResult.Split(":");
+                val = splitter[2].Substring(0, splitter[2].Length-2);
+                if (val == null)
                 {
-                    resultValue = coinGeckoResult.bitcoin.zar;
-                }
-                else if (currency.Equals("usd", StringComparison.InvariantCultureIgnoreCase))
-                {
-                    resultValue = coinGeckoResult.bitcoin.usd;
+                    return null;
                 }
 
-                return resultValue;
+                return double.Parse(val);
             }
 
             return null;

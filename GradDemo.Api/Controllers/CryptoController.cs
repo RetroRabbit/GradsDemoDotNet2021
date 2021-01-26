@@ -21,18 +21,52 @@ namespace GradDemo.Api.Controllers
     public class CryptoController : ControllerBase
     {
         private readonly CoinGeckoProvider _coinGeckoProvider;
-
+        User user = new User();
         public CryptoController(CoinGeckoProvider coinProv)
         {
             _coinGeckoProvider = coinProv;
         }
 
-        [HttpGet("value/for/{coinId}/currency/{currency}")]
-        public async Task<Response<CryptoCoinResponse>> GetCoin(string coinId, string currency)
+        [HttpGet("value/for/bitcoin/currency/{currency}")]
+        public async Task<Response<CryptoCoinResponse>> GetCoin(string currency)
         {
             var result = new CryptoCoinResponse();
+            var res = await _coinGeckoProvider.GetValueForCoin(currency);
 
-            var res = await _coinGeckoProvider.GetValueForCoin(coinId, currency);
+            if (res.HasValue)
+            {
+                return Response<CryptoCoinResponse>.Successful(new CryptoCoinResponse()
+                {
+                    Value = res.Value
+                });
+            }
+
+            return Response<CryptoCoinResponse>.Error("Something went wrong");
+        }
+        [HttpGet("currencies/")]
+        public async Task<Response<List<string>>> GetCurrencies()
+        {
+
+            var res = await _coinGeckoProvider.GetCurrencies();
+
+            if (res.Count>0)
+            {
+                return Response<List<string>>.Successful(res);
+            }
+
+            return Response<List<string>>.Error("Something went wrong");
+        }
+        [HttpGet("custom/response/for/{name}")]
+        public async Task<Response<CryptoCoinResponse>> GetCoinCustom(string name)
+        {
+            string currency;
+            if (name == user.name)
+            {
+                 currency = user.currency;
+            }
+            
+            var result = new CryptoCoinResponse();
+            var res = await _coinGeckoProvider.GetValueForCoin("usd");
 
             if (res.HasValue)
             {
