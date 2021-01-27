@@ -1,4 +1,5 @@
-﻿using GradDemo.Api.Models.CoinGecko;
+﻿using GradDemo.Api.Entities;
+using Microsoft.AspNetCore.Identity;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -12,6 +13,7 @@ namespace GradDemo.Api.Providers
     {
         static HttpClient client = new HttpClient();
         string currUrl;
+        
         List<string> currencies = new List<string>();
 
         public CoinGeckoProvider(string baseUrl,string currenciesurl)
@@ -39,25 +41,20 @@ namespace GradDemo.Api.Providers
         }
         public async Task<double?> GetValueForCoin(string currency)
         {
-            double? resultValue = null;
             currencies =  await GetCurrencies();
-
             string url = $"api/v3/simple/price?ids=bitcoin&vs_currencies={currency}";
             HttpResponseMessage response = await client.GetAsync(url);
             if (response.IsSuccessStatusCode)
             {
                 string res = await response.Content.ReadAsStringAsync();
-                var coinGeckoResult = JsonConvert.DeserializeObject(res);
-                string val;
-                var someResult = res;
-                string[] splitter = someResult.Split(":");
-                val = splitter[2].Substring(0, splitter[2].Length-2);
+                string[] splitter = res.Split(":");
+                double? val = double.Parse(splitter[2].Substring(0, splitter[2].Length-2));
                 if (val == null)
                 {
                     return null;
                 }
 
-                return double.Parse(val);
+                return val;
             }
 
             return null;

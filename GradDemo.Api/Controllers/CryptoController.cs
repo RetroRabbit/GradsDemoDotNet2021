@@ -4,13 +4,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Net;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Threading.Tasks;
 using GradDemo.Api.Models;
-using Newtonsoft.Json;
-using GradDemo.Api.Models.CoinGecko;
 using GradDemo.Api.Providers;
+using Microsoft.AspNetCore.Identity;
+using GradDemo.Api.Entities;
+using Microsoft.AspNetCore.Authorization;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -21,10 +19,11 @@ namespace GradDemo.Api.Controllers
     public class CryptoController : ControllerBase
     {
         private readonly CoinGeckoProvider _coinGeckoProvider;
-        User user = new User();
-        public CryptoController(CoinGeckoProvider coinProv)
+        private readonly UserManager<Device> _userManager;
+        public CryptoController(CoinGeckoProvider coinProv, UserManager<Device> userManager)
         {
             _coinGeckoProvider = coinProv;
+            _userManager = userManager;
         }
 
         [HttpGet("value/for/bitcoin/currency/{currency}")]
@@ -56,18 +55,17 @@ namespace GradDemo.Api.Controllers
 
             return Response<List<string>>.Error("Something went wrong");
         }
-        [HttpGet("custom/response/for/{name}")]
-        public async Task<Response<CryptoCoinResponse>> GetCoinCustom(string name)
+        [Authorize]
+        [HttpGet("custom/response/")]
+        public async Task<Response<CryptoCoinResponse>> GetCoinCustom()
         {
-            string currency;
-            if (name == user.name)
+            var user = await _userManager.GetUserAsync(User);
+            string currency = user.currency;
+            if (currency == null)
             {
-                 currency = user.currency;
+                currency = "usd";
             }
-            
-            var result = new CryptoCoinResponse();
-            var res = await _coinGeckoProvider.GetValueForCoin("usd");
-
+            var res = await _coinGeckoProvider.GetValueForCoin($"{currency}");
             if (res.HasValue)
             {
                 return Response<CryptoCoinResponse>.Successful(new CryptoCoinResponse()
