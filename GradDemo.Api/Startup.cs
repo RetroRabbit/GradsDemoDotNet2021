@@ -45,8 +45,9 @@ namespace GradDemo.Api
 
             if (!IntergrationTesting)
             {
+                var gradsDBEnv = Environment.GetEnvironmentVariable("gradsDBEnv");
                 services.AddDbContext<ApplicationDbContext>
-                    (opt => opt.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+                    (opt => opt.UseSqlServer(gradsDBEnv ?? Configuration.GetConnectionString("DefaultConnection")));
             }
 
             services.AddSwaggerGen(c =>
