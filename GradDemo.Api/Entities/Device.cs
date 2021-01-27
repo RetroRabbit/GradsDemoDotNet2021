@@ -8,6 +8,8 @@ namespace GradDemo.Api.Entities
 {
     public class Device : IdentityUser
     {
-        public string ShirtSize { get; set; }
+        internal string name;
+
+        public string currency { get; set; }
     }
 }

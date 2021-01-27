@@ -70,6 +70,27 @@ namespace GradDemo.Api.Controllers
                 ClientSecret = password
             };
         }
+        [HttpPost("register/set/currency/{currency}")]
+        public async Task<ActionResult<DeviceCredentials>> RegisterUser(string currency)
+        {
+            string password = GenerateRandomClientSecret();
+            string username = GenerateRandomClientId();
+
+            var currentUser = await _userManager.CreateAsync(new Device()
+            {
+                UserName = username,
+                Email = $"{username}@grademoapi.co.za",
+                AccessFailedCount = 0,
+                EmailConfirmed = true,
+                currency = currency
+            }, password);
+
+            return new DeviceCredentials
+            {
+                ClientId = username,
+                ClientSecret = password
+            };
+        }
 
         private string GenerateRandomClientId()
         {

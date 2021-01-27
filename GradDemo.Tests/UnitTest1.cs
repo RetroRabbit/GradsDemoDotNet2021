@@ -2,7 +2,6 @@ using GradDemo.Api;
 using GradDemo.Api.Entities;
 using GradDemo.Api.Models;
 using GradDemo.Api.Models.Auth;
-using GradDemo.Api.Models.CoinGecko;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Net.Http;
