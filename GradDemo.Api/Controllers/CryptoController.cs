@@ -20,10 +20,12 @@ namespace GradDemo.Api.Controllers
     {
         private readonly CoinGeckoProvider _coinGeckoProvider;
         private readonly UserManager<Device> _userManager;
-        public CryptoController(CoinGeckoProvider coinProv, UserManager<Device> userManager)
+        private readonly ApplicationDbContext _context;
+        public CryptoController(CoinGeckoProvider coinProv, UserManager<Device> userManager,ApplicationDbContext context)
         {
             _coinGeckoProvider = coinProv;
             _userManager = userManager;
+            _context = context;
         }
 
         [HttpGet("value/for/bitcoin/currency/{currency}")]
@@ -60,6 +62,7 @@ namespace GradDemo.Api.Controllers
         public async Task<Response<CryptoCoinResponse>> GetCoinCustom()
         {
             var user = await _userManager.GetUserAsync(User);
+            await _context.SaveChangesAsync();
             string currency = user.currency;
             if (currency == null)
             {
