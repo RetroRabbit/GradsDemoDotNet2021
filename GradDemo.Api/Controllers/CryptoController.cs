@@ -44,5 +44,17 @@ namespace GradDemo.Api.Controllers
 
             return Response<CryptoCoinResponse>.Error("Something went wrong");
         }
+
+        [HttpGet("value/for/currencies")]
+        public async Task<Response<string[]>> GetCurrencyPrice()
+        {
+            string[] currencyResults; //will return an array of strings, in this case, a string of the different currencies
+            currencyResults = await _coinGeckoProvider.GetCurrency(); // awaits the class written in the GeckoProvider
+            if (currencyResults != null) //if currencyResults are not empty, then return a string array of all currencies else state that there is an error message
+            {
+                return Response<string[]>.Successful(currencyResults);
+            }
+            return Response<string[]>.Error("Something went wrong");
+        }
     }
 }

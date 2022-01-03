@@ -9,5 +9,6 @@ namespace GradDemo.Api.Entities
     public class Device : IdentityUser
     {
         public string ShirtSize { get; set; }
+        public string Preference { get; set; }
     }
 }

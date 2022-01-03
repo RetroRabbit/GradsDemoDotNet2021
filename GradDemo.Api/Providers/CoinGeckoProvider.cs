@@ -43,5 +43,21 @@ namespace GradDemo.Api.Providers
 
             return null;
         }
+        public async Task<string[]> GetCurrency()
+        {
+            string[] currencyResults = null;
+            string path = $"/api/v3/simple/supported_vs_currencies";
+
+            HttpResponseMessage currencyResponse = await client.GetAsync(path);
+
+            if (currencyResponse.IsSuccessStatusCode)
+            {
+                var result = await currencyResponse.Content.ReadAsStringAsync();
+                var currencyResult = JsonConvert.DeserializeObject<string[]>(result);
+                currencyResults = currencyResult;
+                return currencyResults;
+            }
+            return null;
+        }
     }
 }
